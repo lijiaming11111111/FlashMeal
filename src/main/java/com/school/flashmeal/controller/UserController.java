@@ -4,6 +4,7 @@ import com.school.flashmeal.common.Result;
 import com.school.flashmeal.entity.User;
 import com.school.flashmeal.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -22,6 +23,11 @@ public class UserController {
             return Result.error("查询数据为null");
         }
         return Result.success(users);
+    }
+
+    @GetMapping("/{id}")
+    public Result<User> getUserById(@PathVariable Integer id){
+        return Result.success(userService.getUserById(id));
     }
 
     @PostMapping

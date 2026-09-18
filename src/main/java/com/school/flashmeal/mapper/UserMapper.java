@@ -19,4 +19,7 @@ public interface UserMapper {
 
     @Delete("DELETE FROM `user` where id=#{id}")
     Boolean deleteUser(Integer id);
+
+    @Select("SELECT * FROM user WHERE id=#{id}")
+    User selectUserById(Integer id);
 }
