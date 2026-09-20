@@ -1,5 +1,6 @@
 package com.school.flashmeal.controller;
 
+import com.school.flashmeal.common.BusinessException;
 import com.school.flashmeal.common.Result;
 import com.school.flashmeal.entity.User;
 import com.school.flashmeal.service.UserService;
@@ -20,13 +21,14 @@ public class UserController {
     public Result<List<User>> listUsers(){
         List<User> users = userService.listUsers();
         if (users==null || users.isEmpty()){
-            return Result.error("查询数据为null");
+           throw new BusinessException("查询数据为null");
         }
         return Result.success(users);
     }
 
     @GetMapping("/{id}")
     public Result<User> getUserById(@PathVariable Integer id){
+
         return Result.success(userService.getUserById(id));
     }
 

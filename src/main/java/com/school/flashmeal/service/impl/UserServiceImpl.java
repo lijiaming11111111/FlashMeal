@@ -1,5 +1,6 @@
 package com.school.flashmeal.service.impl;
 
+import com.school.flashmeal.common.BusinessException;
 import com.school.flashmeal.entity.User;
 import com.school.flashmeal.mapper.UserMapper;
 import com.school.flashmeal.service.UserService;
@@ -26,7 +27,11 @@ public class UserServiceImpl implements UserService {
     @Cacheable(value = "user",key = "#id")
     public User getUserById(Integer id){
         System.out.println("==============查询成功===");
-        return userMapper.selectUserById(id);
+        User user = userMapper.selectUserById(id);
+        if (user == null){
+            throw new BusinessException("查询用户为null");
+        }
+        return user;
     }
 
     @Override
@@ -36,7 +41,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    @CacheEvict(value = "user",key = "#p0", beforeInvocation = true)
+    @CacheEvict(value = "user",key = "#id", beforeInvocation = true)
     public Boolean updateUser(Integer id,User user) {
         user.setId(id);
         return userMapper.updateUser(user);
