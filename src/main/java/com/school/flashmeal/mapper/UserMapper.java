@@ -10,7 +10,7 @@ public interface UserMapper {
     @Select("select * FROM `user` ")
     List<User> selectQuery();
 
-    @Insert("INSERT INTO `user`(name) VALUES (#{name})")
+    @Insert("INSERT INTO `user`(name,password) VALUES (#{name},#{password})")
     @Options(useGeneratedKeys = true,keyProperty = "id")
     void insertUser(User user);
 
@@ -22,4 +22,7 @@ public interface UserMapper {
 
     @Select("SELECT * FROM user WHERE id=#{id}")
     User selectUserById(Integer id);
+
+    @Select("SELECT * FROM user WHERE name=#{userName}")
+    User selectUsername(String userName);
 }

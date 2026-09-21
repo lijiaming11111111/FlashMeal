@@ -13,8 +13,14 @@ public class GlobalExceptionHandler {
         return Result.error(e.getMessage());
     }
 
+    @ExceptionHandler(UnauthorizedException.class)
+    public Result<String> handleUnauthorizedException(UnauthorizedException e) {
+        return Result.error(401,e.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public Result<String> handleException(Exception e) {
         return Result.error("全局异常触发");
     }
+
 }

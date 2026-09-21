@@ -46,4 +46,9 @@ public class UserController {
     public Result<Boolean> deleteUser(@PathVariable Integer id){
         return Result.success(userService.deleteUser(id));
     }
+
+    @PostMapping("/login")
+    public Result<String> login(@RequestBody User user){
+        return Result.success(userService.login(user.getName(),user.getPassword()));
+    }
 }

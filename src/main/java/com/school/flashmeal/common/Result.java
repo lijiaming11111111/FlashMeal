@@ -25,4 +25,12 @@ public class Result<T> {
         result.setData(null);
         return result;
     }
+
+    public static <T> Result<T> error(Integer code, String msg){
+        Result<T> result = new Result<>();
+        result.setCode(code);
+        result.setMsg(msg);
+        result.setData(null);
+        return result;
+    }
 }
