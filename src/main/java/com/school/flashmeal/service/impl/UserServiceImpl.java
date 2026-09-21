@@ -1,16 +1,24 @@
 package com.school.flashmeal.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.school.flashmeal.common.BusinessException;
+import com.school.flashmeal.dto.user.CreateUserDTO;
+import com.school.flashmeal.dto.user.ListUsersDTO;
+import com.school.flashmeal.dto.user.LoginUserDTO;
+import com.school.flashmeal.dto.user.UpdateUserDTO;
 import com.school.flashmeal.entity.User;
 import com.school.flashmeal.mapper.UserMapper;
 import com.school.flashmeal.service.UserService;
 import com.school.flashmeal.util.JwtUtil;
+import com.school.flashmeal.vo.user.GetUserByIdVO;
+import com.school.flashmeal.vo.user.ListUsersVO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.HashMap;
 import java.util.List;
@@ -26,32 +34,41 @@ public class UserServiceImpl implements UserService {
     private PasswordEncoder passwordEncoder;
 
     @Override
-    public List<User> listUsers() {
-        return userMapper.selectQuery();
+    public PageInfo<ListUsersVO> listUsers(ListUsersDTO listUsersDTO) {
+        PageHelper.startPage(listUsersDTO.getPageNum(), listUsersDTO.getPageSize());
+        List<ListUsersVO> users = userMapper.selectQuery();
+        return new PageInfo<>(users);
     }
 
     @Override
     @Cacheable(value = "user",key = "#id")
-    public User getUserById(Integer id){
+    public GetUserByIdVO getUserById(Integer id){
         System.out.println("==============查询成功===");
-        User user = userMapper.selectUserById(id);
-        if (user == null){
+        GetUserByIdVO getUserByIdVO = userMapper.selectUserByName(id);
+        if (getUserByIdVO == null){
             throw new BusinessException("查询用户为null");
         }
-        return user;
+        return getUserByIdVO;
     }
 
     @Override
-    public String createUser(User user) {
+    public String createUser(CreateUserDTO createUserDTO) {
+        User user = new User();
+        BeanUtils.copyProperties(createUserDTO, user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userMapper.insertUser(user);
-        return "新增成功";
+        return String.valueOf(user.getId());
     }
 
     @Override
     @CacheEvict(value = "user",key = "#id", beforeInvocation = true)
-    public Boolean updateUser(Integer id,User user) {
-        user.setId(id);
+    public Boolean updateUser(Integer id, UpdateUserDTO updateUserDTO) {
+        User user = userMapper.selectUserById(id);
+        if (user == null){
+            throw new BusinessException("查询用户为null");
+        }
+        user.setName(updateUserDTO.getName());
+        user.setPassword(passwordEncoder.encode(updateUserDTO.getPassword()));
         return userMapper.updateUser(user);
     }
 
@@ -62,12 +79,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String login(String username, String password) {
-        User user = userMapper.selectUsername(username);
+    public String login(LoginUserDTO loginUserDTO) {
+        User user = userMapper.selectUsername(loginUserDTO.getName());
         if (user == null){
             throw new BusinessException("用户不存在");
         }
-        if (!passwordEncoder.matches(password,user.getPassword())){
+        if (!passwordEncoder.matches(loginUserDTO.getPassword(),user.getPassword())){
             throw new BusinessException("密码错误");
         }
         Map<String,Object> map = new HashMap<>();

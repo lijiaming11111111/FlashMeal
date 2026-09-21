@@ -1,14 +1,17 @@
 package com.school.flashmeal.controller;
 
-import com.school.flashmeal.common.BusinessException;
+import com.github.pagehelper.PageInfo;
 import com.school.flashmeal.common.Result;
-import com.school.flashmeal.entity.User;
+import com.school.flashmeal.dto.user.CreateUserDTO;
+import com.school.flashmeal.dto.user.ListUsersDTO;
+import com.school.flashmeal.dto.user.LoginUserDTO;
+import com.school.flashmeal.dto.user.UpdateUserDTO;
 import com.school.flashmeal.service.UserService;
+import com.school.flashmeal.vo.user.GetUserByIdVO;
+import com.school.flashmeal.vo.user.ListUsersVO;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -18,28 +21,24 @@ public class UserController {
     private UserService userService;
 
     @GetMapping
-    public Result<List<User>> listUsers(){
-        List<User> users = userService.listUsers();
-        if (users==null || users.isEmpty()){
-           throw new BusinessException("查询数据为null");
-        }
-        return Result.success(users);
+    public Result<PageInfo<ListUsersVO>> listUsers(@Valid ListUsersDTO listUsersDTO){
+        PageInfo<ListUsersVO> pageInfo = userService.listUsers(listUsersDTO);
+        return Result.success(pageInfo);
     }
 
     @GetMapping("/{id}")
-    public Result<User> getUserById(@PathVariable Integer id){
-
+    public Result<GetUserByIdVO> getUserById(@PathVariable Integer id){
         return Result.success(userService.getUserById(id));
     }
 
     @PostMapping
-    public Result<String> createUser(@RequestBody User user){
-        return Result.success(userService.createUser(user));
+    public Result<String> createUser(@RequestBody @Valid CreateUserDTO createUserDTO){
+        return Result.success("新增用户成功",userService.createUser(createUserDTO));
     }
 
     @PutMapping("/{id}")
-    public Result<Boolean> updateUser(@PathVariable Integer id,@RequestBody User user){
-        return Result.success(userService.updateUser(id,user));
+    public Result<Boolean> updateUser(@PathVariable Integer id, @RequestBody @Valid UpdateUserDTO updateUserDTO){
+        return Result.success(userService.updateUser(id,updateUserDTO));
     }
 
     @DeleteMapping("/{id}")
@@ -48,7 +47,7 @@ public class UserController {
     }
 
     @PostMapping("/login")
-    public Result<String> login(@RequestBody User user){
-        return Result.success(userService.login(user.getName(),user.getPassword()));
+    public Result<String> login(@RequestBody @Valid LoginUserDTO loginUserDTO){
+        return Result.success(userService.login(loginUserDTO));
     }
 }
