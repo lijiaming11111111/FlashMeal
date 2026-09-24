@@ -18,4 +18,6 @@ public interface DishService {
     Boolean updateDish(Integer id,UpdateDishDTO updateDishDTO);
 
     Boolean deleteDish(Integer id);
+
+    String orderDish(Long dishId, Integer userId);
 }

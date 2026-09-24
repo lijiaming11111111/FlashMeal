@@ -40,7 +40,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public Result<String> handleException(Exception e) {
-        return Result.error("全局异常触发");
+        return Result.error("全局异常触发",e.getMessage());
     }
 
 }

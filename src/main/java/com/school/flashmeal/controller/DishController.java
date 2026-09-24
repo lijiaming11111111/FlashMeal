@@ -2,6 +2,7 @@ package com.school.flashmeal.controller;
 
 import com.github.pagehelper.PageInfo;
 import com.school.flashmeal.common.Result;
+import com.school.flashmeal.context.BaseContext;
 import com.school.flashmeal.dto.dish.CreateDishDTO;
 import com.school.flashmeal.dto.dish.UpdateDishDTO;
 import com.school.flashmeal.service.DishService;
@@ -43,5 +44,11 @@ public class DishController {
     @DeleteMapping("/{id}")
     public Result<Boolean> deleteDish(@PathVariable Integer id){
         return Result.success(dishService.deleteDish(id));
+    }
+
+    @PostMapping("/{dishId}/order")
+    public Result<String> orderDish(@PathVariable Long dishId){
+        Integer userId = BaseContext.getCurrentUserId();
+        return Result.success(dishService.orderDish(dishId,userId));
     }
 }

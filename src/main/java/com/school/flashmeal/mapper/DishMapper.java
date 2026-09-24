@@ -29,4 +29,11 @@ public interface DishMapper {
 
     @Delete("DELETE FROM dish WHERE id=#{id}")
     Boolean deleteDish(Integer id);
+
+    @Select("SELECT * FROM dish WHERE id = #{id}")
+    Dish selectDishById(Long id);
+
+    @Update("UPDATE dish SET stock = stock - 1 WHERE id = #{id} AND stock > 0")
+    Boolean decreaseStock(Long id);
+
 }

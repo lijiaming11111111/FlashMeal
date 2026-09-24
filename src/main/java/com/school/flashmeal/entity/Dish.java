@@ -14,6 +14,8 @@ public class Dish {
 
     private BigDecimal price;
 
+    private Long stock;
+
     private String image;
 
     private String category;
